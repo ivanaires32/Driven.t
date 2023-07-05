@@ -1,3 +1,4 @@
+import { notFoundError } from "../../errors";
 import { ticketsRepository } from "../../repositories/tickets-repository";
 
 async function getTicketsTypes() {
@@ -5,12 +6,19 @@ async function getTicketsTypes() {
     return ticketsType
 }
 
-function postTicketsUser(idUser: number, idTicketType: number) {
-    const ticket = ticketsRepository.postTicketUser(idUser, idTicketType)
+async function postTicketsUser(idUser: number, idTicketType: number) {
+    const ticket = await ticketsRepository.postTicketUser(idUser, idTicketType)
+    return ticket
+}
+
+async function getTicket(userId: number) {
+    const ticket = await ticketsRepository.getTicket(userId)
+    if (ticket === null) throw notFoundError()
     return ticket
 }
 
 export const ticketsService = {
     getTicketsTypes,
-    postTicketsUser
+    postTicketsUser,
+    getTicket
 }

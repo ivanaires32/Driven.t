@@ -7,23 +7,25 @@ async function getTicketsTypes(): Promise<TicketType[]> {
     return tickets
 }
 
-async function enrollment(id: number) {
-    const cadastro = await connectDb().enrollment.findMany({
-        where: {
-            userId: id
+async function getTicket(userId: number) {
+    const ticket = await connectDb().ticket.findFirst({
+        include: {
+            Enrollment: {
+                select: {
+                    id: true
+                }
+            }
+        }, where: {
+            Enrollment: {
+                userId: userId
+            }
         }
-    })
-    console.log(cadastro)
 
-    if (cadastro.length === 0) {
-        return "Primeiro faça o cadastro"
-    }
+    })
+    return ticket
 }
 
-
-
 async function postTicketUser(idUser: number, idTicketType: number) {
-    await enrollment(idUser)
     const ticket = await connectDb().ticket.create({
         include: {
             TicketType: true
@@ -46,5 +48,6 @@ async function postTicketUser(idUser: number, idTicketType: number) {
 
 export const ticketsRepository = {
     getTicketsTypes,
-    postTicketUser
+    postTicketUser,
+    getTicket
 }
