@@ -54,7 +54,17 @@ async function postTicketUser(userId: number, idTicketType: number) {
             }
         },
         include: {
-            TicketType: true
+            TicketType: {
+                select: {
+                    id: true,
+                    name: true,
+                    price: true,
+                    isRemote: true,
+                    includesHotel: true,
+                    createdAt: true,
+                    updatedAt: true
+                }
+            }
         }
     })
     if (ticket) {
