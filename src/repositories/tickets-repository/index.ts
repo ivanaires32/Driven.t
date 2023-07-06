@@ -9,15 +9,21 @@ async function getTicketsTypes(): Promise<TicketType[]> {
 
 async function getTicket(userId: number) {
     const ticket = await connectDb().ticket.findFirst({
-        include: {
-            Enrollment: {
-                select: {
-                    id: true
-                }
-            }
-        }, where: {
+        where: {
             Enrollment: {
                 userId: userId
+            }
+        }, include: {
+            TicketType: {
+                select: {
+                    id: true,
+                    name: true,
+                    price: true,
+                    isRemote: true,
+                    includesHotel: true,
+                    createdAt: true,
+                    updatedAt: true
+                }
             }
         }
 
@@ -25,24 +31,37 @@ async function getTicket(userId: number) {
     return ticket
 }
 
-async function postTicketUser(idUser: number, idTicketType: number) {
+async function postTicketUser(userId: number, idTicketType: number) {
+    const cadastro = await connectDb().enrollment.findMany({
+        where: {
+            userId: userId
+        }
+    })
+
+    if (cadastro.length === 0) return
     const ticket = await connectDb().ticket.create({
-        include: {
-            TicketType: true
-        }, data: {
+        data: {
+            status: "PAID",
             TicketType: {
                 connect: {
                     id: idTicketType
                 }
-            }, Enrollment: {
-                connect: {
-                    userId: idUser
-                }
             },
-            status: "RESERVED"
+            Enrollment: {
+                connect: {
+                    userId: userId
+                }
+            }
+        },
+        include: {
+            TicketType: true
         }
     })
-    return ticket
+    if (ticket) {
+        return ticket
+    } else {
+        return
+    }
 
 }
 
@@ -50,4 +69,22 @@ export const ticketsRepository = {
     getTicketsTypes,
     postTicketUser,
     getTicket
+}
+
+type TicketUser = {
+    id: number,
+    status: string, //RESERVED | PAID
+    ticketTypeId: number,
+    enrollmentId: number,
+    TicketType: {
+        id: number,
+        name: string,
+        price: number,
+        isRemote: boolean,
+        includesHotel: boolean,
+        createdAt: Date,
+        updatedAt: Date,
+    },
+    createdAt: Date,
+    updatedAt: Date,
 }

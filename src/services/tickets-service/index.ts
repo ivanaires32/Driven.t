@@ -7,7 +7,11 @@ async function getTicketsTypes() {
 }
 
 async function postTicketsUser(idUser: number, idTicketType: number) {
+    if (idTicketType === null || idTicketType <= 0 || isNaN(idTicketType)) throw {
+        type: 'BAD REQUEST'
+    }
     const ticket = await ticketsRepository.postTicketUser(idUser, idTicketType)
+    if (!ticket) throw notFoundError()
     return ticket
 }
 
