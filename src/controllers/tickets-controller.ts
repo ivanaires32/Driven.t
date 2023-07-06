@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 import { ticketsService } from "../services/tickets-service";
-import * as jwt from 'jsonwebtoken';
 
 async function getTicketsTypes(req: Request, res: Response) {
     try {
@@ -14,14 +13,12 @@ async function getTicketsTypes(req: Request, res: Response) {
 
 async function postTicketsUser(req: Request, res: Response) {
     const { ticketTypeId } = req.body
-    const { authorization } = req.headers
-    const token = authorization?.replace("Bearer ", "")
-    const { userId } = jwt.verify(token, process.env.JWT_SECRET) as JWTPayload
+    const userId = res.locals.userId
     try {
         const tickets = await ticketsService.postTicketsUser(Number(userId), Number(ticketTypeId))
         res.status(httpStatus.CREATED).send(tickets)
     } catch (err) {
-        if (err.type === 'BAD REQUEST') {
+        if (err.name === 'BAD REQUEST') {
             return res.sendStatus(httpStatus.BAD_REQUEST)
         } else if (err.name === 'NotFoundError') {
             return res.sendStatus(httpStatus.NOT_FOUND)
@@ -30,11 +27,8 @@ async function postTicketsUser(req: Request, res: Response) {
     }
 }
 
-
 async function getTicket(req: Request, res: Response) {
-    const { authorization } = req.headers
-    const token = authorization?.replace("Bearer ", "")
-    const { userId } = jwt.verify(token, process.env.JWT_SECRET) as JWTPayload
+    const userId = res.locals.userId
     try {
         const ticket = await ticketsService.getTicket(userId)
         res.status(httpStatus.OK).send(ticket)
@@ -46,12 +40,10 @@ async function getTicket(req: Request, res: Response) {
     }
 }
 
+
+
 export const ticketsController = {
     getTicketsTypes,
     postTicketsUser,
-    getTicket
+    getTicket,
 }
-
-type JWTPayload = {
-    userId: number;
-};

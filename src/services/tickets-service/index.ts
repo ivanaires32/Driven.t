@@ -1,4 +1,5 @@
 import { notFoundError } from "../../errors";
+import { badRequest } from "../../errors/bad-resquest-error";
 import { ticketsRepository } from "../../repositories/tickets-repository";
 
 async function getTicketsTypes() {
@@ -7,9 +8,8 @@ async function getTicketsTypes() {
 }
 
 async function postTicketsUser(idUser: number, idTicketType: number) {
-    if (idTicketType === null || idTicketType <= 0 || isNaN(idTicketType)) throw {
-        type: 'BAD REQUEST'
-    }
+    if (idTicketType === null || idTicketType <= 0 || isNaN(idTicketType)) throw badRequest()
+
     const ticket = await ticketsRepository.postTicketUser(idUser, idTicketType)
     if (!ticket) throw notFoundError()
     return ticket
@@ -24,5 +24,5 @@ async function getTicket(userId: number) {
 export const ticketsService = {
     getTicketsTypes,
     postTicketsUser,
-    getTicket
+    getTicket,
 }
