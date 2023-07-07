@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import httpStatus from "http-status"
 import { paymentsService } from "../services/payment-service"
-import { DataCard } from "../repositories/payments-repository"
+import { DataCard } from "../protocols"
 
 async function getPayments(req: Request, res: Response) {
     const { ticketId } = req.query as IdTicket
@@ -23,10 +23,10 @@ async function getPayments(req: Request, res: Response) {
 }
 
 async function postPayments(req: Request, res: Response) {
-    const { ticketId, dataCard } = req.body as PostPayment
+    const { ticketId, cardData } = req.body as PostPayment
     const userId = res.locals.userId
     try {
-        const payments = await paymentsService.postPayments(ticketId, dataCard, Number(userId))
+        const payments = await paymentsService.postPayments(ticketId, cardData, Number(userId))
         res.status(httpStatus.OK).send(payments)
     } catch (err) {
         if (err.name === 'BAD REQUEST') {
@@ -42,7 +42,7 @@ async function postPayments(req: Request, res: Response) {
 
 type PostPayment = {
     ticketId: number,
-    dataCard: DataCard
+    cardData: DataCard
 }
 
 export const paymentsController = {
