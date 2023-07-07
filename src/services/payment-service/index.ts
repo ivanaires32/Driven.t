@@ -3,8 +3,11 @@ import { badRequest } from "../../errors/bad-resquest-error"
 import { DataCard, paymentsRepository } from "../../repositories/payments-repository"
 
 async function getPayments(ticketId: number, userId: number) {
+    if (!ticketId) throw badRequest()
     const payment = await paymentsRepository.getPayments(ticketId, userId)
-    return payment
+    if (payment.length === 0) throw notFoundError()
+    else if (payment === "NotFoundUser") throw unauthorizedError()
+    return payment[0]
 }
 
 async function postPayments(ticketId: number, dataCard: DataCard, userId: number) {

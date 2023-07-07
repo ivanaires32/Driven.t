@@ -41,7 +41,7 @@ async function postTicketUser(userId: number, idTicketType: number) {
     if (cadastro.length === 0) return
     const ticket = await connectDb().ticket.create({
         data: {
-            status: "PAID",
+            status: "RESERVED",
             TicketType: {
                 connect: {
                     id: idTicketType
