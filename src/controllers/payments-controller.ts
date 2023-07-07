@@ -12,12 +12,13 @@ async function getPayments(req: Request, res: Response) {
     } catch (err) {
         if (err.name === 'NotFoundError') {
             return res.sendStatus(httpStatus.NOT_FOUND)
-        } else if (err.name === 'UnauthorizedError') {
-            return res.sendStatus(httpStatus.UNAUTHORIZED)
         } else if (err.name === 'BAD REQUEST') {
             return res.sendStatus(httpStatus.BAD_REQUEST)
+        } else if (err.name === 'UnauthorizedError') {
+            return res.sendStatus(httpStatus.UNAUTHORIZED)
         }
         res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR)
+
     }
 }
 

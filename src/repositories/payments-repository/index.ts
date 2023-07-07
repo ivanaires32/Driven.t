@@ -1,18 +1,16 @@
 import { connectDb } from "../../config"
 
 async function getPayments(ticketId: number, userId: number) {
-    const ticketUser = await connectDb().payment.findMany({
-        where: {
-            Ticket: {
-                Enrollment: {
-                    userId
+    const ticketUser = await connectDb().ticket.findMany({
+        include: {
+            Enrollment: {
+                select: {
+                    userId: true
                 }
             }
         }
     })
-
-
-    if (ticketUser.length === 0) return "NotFoundUser"
+    if (ticketUser.length === 0 || ticketUser[0].Enrollment.userId !== userId) return "UserNotFound"
 
     const dataPayment = await connectDb().payment.findMany({
         where: {

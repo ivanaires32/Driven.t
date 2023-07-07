@@ -6,7 +6,7 @@ async function getPayments(ticketId: number, userId: number) {
     if (!ticketId) throw badRequest()
     const payment = await paymentsRepository.getPayments(ticketId, userId)
     if (payment.length === 0) throw notFoundError()
-    else if (payment === "NotFoundUser") throw unauthorizedError()
+    else if (payment === "UserNotFound") throw unauthorizedError()
     return payment[0]
 }
 
