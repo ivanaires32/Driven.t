@@ -30,6 +30,16 @@ async function postPayments(ticketId: number, dataCard: DataCard, userId: number
 
     if (!ticket) return "NotTicket"
 
+    const userTicket = await connectDb().ticket.findFirst({
+        where: {
+            Enrollment: {
+                userId
+            }
+        }
+    })
+
+    if (!userTicket) return "NotUser"
+
     const value = await connectDb().ticket.findFirst({
         where: {
             id: ticketId
@@ -47,7 +57,15 @@ async function postPayments(ticketId: number, dataCard: DataCard, userId: number
             cardIssuer: dataCard.issuer,
             cardLastDigits: dataCard.number.slice(-4),
             value: value.TicketType.price,
-            ticketId: ticketId
+            ticketId
+        }
+    })
+
+    await connectDb().ticket.update({
+        data: {
+            status: "PAID"
+        }, where: {
+            id: ticketId
         }
     })
 

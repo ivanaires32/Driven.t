@@ -19,6 +19,8 @@ async function postPayments(ticketId: number, dataCard: DataCard, userId: number
     const payment = await paymentsRepository.postPayments(ticketId, dataCard, userId)
     if (payment === "NotTicket") {
         throw notFoundError()
+    } else if (payment === "NotUser") {
+        throw unauthorizedError()
     }
     return payment
 }
