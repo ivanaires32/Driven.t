@@ -2,10 +2,11 @@ import { Request, Response } from "express"
 import httpStatus from "http-status"
 import { paymentsService } from "../services/payment-service"
 import { DataCard } from "../protocols"
+import { AuthenticatedRequest } from "../middlewares"
 
-async function getPayments(req: Request, res: Response) {
+async function getPayments(req: AuthenticatedRequest, res: Response) {
     const { ticketId } = req.query as IdTicket
-    const userId = res.locals.userId
+    const { userId } = req
     try {
         const result = await paymentsService.getPayments(Number(ticketId), userId)
         res.status(httpStatus.OK).send(result)
@@ -22,9 +23,9 @@ async function getPayments(req: Request, res: Response) {
     }
 }
 
-async function postPayments(req: Request, res: Response) {
+async function postPayments(req: AuthenticatedRequest, res: Response) {
     const { ticketId, cardData } = req.body as PostPayment
-    const userId = res.locals.userId
+    const { userId } = req
     try {
         const payments = await paymentsService.postPayments(ticketId, cardData, Number(userId))
         res.status(httpStatus.OK).send(payments)

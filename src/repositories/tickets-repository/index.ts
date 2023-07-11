@@ -1,4 +1,3 @@
-import { Enrollment, Ticket } from "@prisma/client";
 import { connectDb } from "../../config";
 
 
@@ -11,20 +10,10 @@ async function getTicket(userId: number) {
     const ticket = await connectDb().ticket.findFirst({
         where: {
             Enrollment: {
-                userId: userId
+                userId
             }
         }, include: {
-            TicketType: {
-                select: {
-                    id: true,
-                    name: true,
-                    price: true,
-                    isRemote: true,
-                    includesHotel: true,
-                    createdAt: true,
-                    updatedAt: true
-                }
-            }
+            TicketType: true
         }
 
     })
@@ -34,7 +23,7 @@ async function getTicket(userId: number) {
 async function postTicketUser(userId: number, idTicketType: number) {
     const cadastro = await connectDb().enrollment.findMany({
         where: {
-            userId: userId
+            userId
         }
     })
 
@@ -49,22 +38,12 @@ async function postTicketUser(userId: number, idTicketType: number) {
             },
             Enrollment: {
                 connect: {
-                    userId: userId
+                    userId
                 }
             }
         },
         include: {
-            TicketType: {
-                select: {
-                    id: true,
-                    name: true,
-                    price: true,
-                    isRemote: true,
-                    includesHotel: true,
-                    createdAt: true,
-                    updatedAt: true
-                }
-            }
+            TicketType: true
         }
     })
     return ticket

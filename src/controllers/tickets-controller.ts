@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 import { ticketsService } from "../services/tickets-service";
+import { AuthenticatedRequest } from "../middlewares";
 
-async function getTicketsTypes(req: Request, res: Response) {
+async function getTicketsTypes(req: AuthenticatedRequest, res: Response) {
     try {
         const tickets = await ticketsService.getTicketsTypes()
         res.status(httpStatus.OK).send(tickets)
@@ -11,9 +12,9 @@ async function getTicketsTypes(req: Request, res: Response) {
     }
 }
 
-async function postTicketsUser(req: Request, res: Response) {
+async function postTicketsUser(req: AuthenticatedRequest, res: Response) {
     const { ticketTypeId } = req.body
-    const userId = res.locals.userId
+    const { userId } = req;
     try {
         const tickets = await ticketsService.postTicketsUser(Number(userId), Number(ticketTypeId))
         res.status(httpStatus.CREATED).send(tickets)
@@ -27,8 +28,8 @@ async function postTicketsUser(req: Request, res: Response) {
     }
 }
 
-async function getTicket(req: Request, res: Response) {
-    const userId = res.locals.userId
+async function getTicket(req: AuthenticatedRequest, res: Response) {
+    const { userId } = req
     try {
         const ticket = await ticketsService.getTicket(userId)
         res.status(httpStatus.OK).send(ticket)
